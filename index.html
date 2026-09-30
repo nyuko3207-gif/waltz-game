@@ -889,16 +889,28 @@ catchButton.addEventListener('click', () => {
 
   
   const now = performance.now();
-  const timeFromFirstBeat = now - firstBeatTime;
 
-  const beatDuration = 60000 / gameBpm;
-  const correctWindow = beatDuration * 0.35;
+const beatDuration = 60000 / gameBpm;
 
-if (
-  timeFromFirstBeat >= 0 &&
-  timeFromFirstBeat <= correctWindow
-) {
+// 1小節（3拍）の長さ
+const measureDuration = beatDuration * 3;
 
+// 最後の1拍目から何msたったか
+const timeFromFirstBeat = now - firstBeatTime;
+
+// 次の1拍目まであと何msか
+const timeToNextFirstBeat =
+  measureDuration - timeFromFirstBeat;
+
+// 正解範囲
+const correctWindow = beatDuration * 0.45;
+
+// 1拍目の直後 または 次の1拍目の直前なら正解
+const isCorrect =
+  timeFromFirstBeat <= correctWindow ||
+  timeToNextFirstBeat <= correctWindow;
+
+if (isCorrect) {
   correctCount++;
   challengeResults.push(true);
   result.textContent = "✨ せいかい！ ✨";
