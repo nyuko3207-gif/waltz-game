@@ -821,8 +821,7 @@ function gameSound(isFirstBeat) {
 
 function gameBeatPlay() {
 
-  // 新しい拍になったので、また1回押せる
-  canCatch = true;
+  
 
   if (gameBeat === 1) {
     firstBeatTime = performance.now();
@@ -880,12 +879,11 @@ gameStartButton.addEventListener('click', async () => {
 
 catchButton.addEventListener('click', () => {
 
-  if (!gamePlaying || !canCatch) {
-    return;
-  }
+  if (!gamePlaying) {
+  return;
+}
 
-  // 連打防止
-  canCatch = false;
+  
 
   challengeCount++;
 
@@ -893,9 +891,12 @@ catchButton.addEventListener('click', () => {
   const now = performance.now();
   const timeFromFirstBeat = now - firstBeatTime;
 
-  if (
+  const beatDuration = 60000 / gameBpm;
+  const correctWindow = beatDuration * 0.35;
+
+if (
   timeFromFirstBeat >= 0 &&
-  timeFromFirstBeat <= 200
+  timeFromFirstBeat <= correctWindow
 ) {
 
   correctCount++;
