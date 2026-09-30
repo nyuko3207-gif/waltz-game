@@ -578,9 +578,9 @@
 
 <div class="tempo-control">
   <span>テンポ</span>
-  <button class="tempo-button" data-bpm="80">🐢 ゆっくり</button>
-  <button class="tempo-button selected" data-bpm="100">🎵 ふつう</button>
-  <button class="tempo-button" data-bpm="120">🐇 はやい</button>
+  <button class="tempo-button" data-bpm="55">🐢 ゆっくり</button>
+  <button class="tempo-button selected" data-bpm="75">🎵 ふつう</button>
+  <button class="tempo-button" data-bpm="100">🐇 はやい</button>
 </div>
 
 </div>
@@ -606,7 +606,9 @@
  let gameTimer;
  let gamePlaying = false;
 
- let gameBpm = 100;
+ let gameBpm = 75;
+
+ let firstBeatTime = 0;
 
  let challengeCount = 0;
  let correctCount = 0;
@@ -770,6 +772,14 @@ gameButton.addEventListener('click', () => {
 
 backButton.addEventListener('click', () => {
 
+  // ゲームの音を停止
+  if (gamePlaying) {
+    clearInterval(gameTimer);
+    gamePlaying = false;
+    gameStartButton.textContent = '▶ ゲームスタート';
+  }
+
+  // 練習画面へ戻る
   gameScreen.style.display = 'none';
   practiceScreen.style.display = 'block';
 
@@ -813,6 +823,10 @@ function gameBeatPlay() {
 
   // 新しい拍になったので、また1回押せる
   canCatch = true;
+
+  if (gameBeat === 1) {
+    firstBeatTime = performance.now();
+  }
 
   gameSound(gameBeat === 1);
 
@@ -875,7 +889,15 @@ catchButton.addEventListener('click', () => {
 
   challengeCount++;
 
-  if (gameBeat === 2) {
+  
+  const now = performance.now();
+  const timeFromFirstBeat = now - firstBeatTime;
+
+  if (
+  timeFromFirstBeat >= 0 &&
+  timeFromFirstBeat <= 200
+) {
+
   correctCount++;
   challengeResults.push(true);
   result.textContent = "✨ せいかい！ ✨";
