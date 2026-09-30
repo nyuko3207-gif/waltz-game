@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ワルツのボール</title>
+
+
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #fffaf0;
+      font-family: sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 40px;
+    }
+
+    .game-area {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    /* ボール */
+    .ball {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background-color: #f4a261;
+
+      left: 50%;
+      bottom: 35px;
+
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
+    /* 地面 */
+    .ground {
+      position: absolute;
+      left: 0;
+      bottom: 70px;
+      width: 100%;
+      height: 8px;
+      background-color: #555;
+      z-index: 5;
+    }
+
+    /* 背景全体 */
+    .scenery-track {
+      position: absolute;
+      left: 0;
+      bottom: 78px;
+
+      display: flex;
+      width: 200%;
+
+      animation: scroll 10s linear infinite;
+      animation-play-state: paused;
+    }
+
+    /* 同じ背景を2枚並べる */
+    .scenery {
+      width: 50%;
+      flex-shrink: 0;
+
+      font-size: 55px;
+      white-space: nowrap;
+
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+    }
+
+    @keyframes scroll {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+#beatNumber {
+  position: absolute;
+  left: 50%;
+  bottom: 350px;
+  transform: translateX(-50%);
+
+  font-size: 100px;
+  font-weight: bold;
+  z-index: 20;
+}
+#gameScreen {
+  display: none;
+  padding-top: 100px;
+}
+
+#gameScreen p {
+  font-size: 24px;
+}
+
+#gameScreen button {
+  font-size: 18px;
+  padding: 10px 20px;
+}
+
+#catchButton {
+  font-size: 50px;
+  font-weight: bold;
+
+  width: 220px;
+  height: 140px;
+
+  border-radius: 30px;
+  border: none;
+
+  background-color: #f4a261;
+  cursor: pointer;
+}
+
+#catchButton:focus,
+#catchButton:active {
+  outline: none;
+}
+
+#result {
+  height: 70px;
+  margin-top: 25px;
+
+  font-size: 40px;
+  font-weight: bold;
+}
+
+#score {
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+.correctCircle {
+  color: #000;
+}
+
+.wrongCircle {
+  color: #c8c8c8;
+}
+
+.emptyCircle {
+  color: #000;
+}
+
+/* ===== 空 ===== */
+
+.sky {
+  position: absolute;
+  left: 0;
+  bottom: 76px;
+  width: 100%;
+  height: 430px;
+
+  background: linear-gradient(
+    to bottom,
+    #bfe8f7 0%,
+    #e7f6fb 75%,
+    #f8f4e8 100%
+  );
+
+  overflow: hidden;
+  z-index: 0;
+}
+
+
+/* ===== 雲 ===== */
+
+.cloud {
+  position: absolute;
+  width: 110px;
+  height: 38px;
+
+  background: rgba(255,255,255,0.85);
+  border-radius: 50px;
+}
+
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+}
+
+.cloud::before {
+  width: 55px;
+  height: 55px;
+  left: 18px;
+  top: -25px;
+}
+
+.cloud::after {
+  width: 70px;
+  height: 70px;
+  right: 12px;
+  top: -35px;
+}
+
+.cloud1 {
+  top: 70px;
+  left: 10%;
+}
+
+.cloud2 {
+  top: 120px;
+  left: 48%;
+  transform: scale(0.75);
+}
+
+.cloud3 {
+  top: 55px;
+  left: 80%;
+  transform: scale(0.55);
+}
+
+
+/* ===== 丘 ===== */
+
+.hill {
+  position: absolute;
+  border-radius: 50% 50% 0 0;
+  transform-origin: center bottom;
+}
+
+/* 遠くの薄い丘 */
+.hillBack {
+  width: 120%;
+  height: 240px;
+
+  left: -20%;
+  bottom: 76px;
+
+  background: #b9d8a5;
+
+  border-radius: 50% 55% 0 0 / 45% 45% 0 0;
+
+  z-index: 1;
+}
+
+/* 手前の濃い丘 */
+.hillFront {
+  width: 130%;
+  height: 185px;
+
+  left: -5%;
+  bottom: 76px;
+
+  background: #8fbd7c;
+
+  border-radius: 55% 45% 0 0 / 55% 50% 0 0;
+
+  z-index: 2;
+}
+
+/* ===== 木と花 ===== */
+
+.scenery {
+  width: 100vw;
+  height: 90px;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+
+  font-size: 42px;
+}
+
+.scenery-track {
+  position: absolute;
+
+  left: 0;
+  bottom: 82px;
+
+  display: flex;
+
+  width: 200vw;
+  height: 90px;
+
+  z-index: 3;
+}
+
+
+/* ボールと地面は風景より前へ */
+
+#ball {
+  z-index: 5;
+}
+
+.ground {
+  z-index: 6;
+}
+#catchButton {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+
+  background: #f7a35c;
+  border: none;
+
+  font-size: 26px;
+  font-weight: bold;
+  color: #222;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 0 #d9823f;
+}
+
+#catchButton:active {
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 #d9823f;
+}
+
+/* ゲーム画面の背景 */
+/* ゲーム画面の背景 */
+#gameScreen {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+
+  background:
+    /* 左の雲 */
+    radial-gradient(
+      ellipse at 15% 18%,
+      rgba(255,255,255,0.9) 0 35px,
+      transparent 37px
+    ),
+
+    /* 右の雲 */
+    radial-gradient(
+      ellipse at 82% 25%,
+      rgba(255,255,255,0.8) 0 28px,
+      transparent 30px
+    ),
+
+    /* 手前の丘 */
+    radial-gradient(
+      ellipse 75% 35% at 65% 105%,
+      #a9cf91 0%,
+      #a9cf91 99%,
+      transparent 100%
+    ),
+
+    /* 奥の丘 */
+    radial-gradient(
+      ellipse 80% 32% at 30% 100%,
+      #c5dfae 0%,
+      #c5dfae 99%,
+      transparent 100%
+    ),
+
+    /* 空 */
+    linear-gradient(
+      to bottom,
+      #cceefa 0%,
+      #e8f7fb 100%
+    );
+}
+
+#gameScreen > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ゲーム画面の木と花 */
+.game-decoration {
+  position: absolute !important;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0 !important;
+  pointer-events: none;
+}
+
+.game-decoration span {
+  position: absolute;
+  font-size: 34px;
+}
+
+/* 左の木 */
+.tree1 {
+  left: 12%;
+  bottom: 18%;
+}
+
+/* 左の花 */
+.flower1 {
+  left: 28%;
+  bottom: 15%;
+}
+
+/* 右の花 */
+.flower2 {
+  right: 27%;
+  bottom: 16%;
+}
+
+/* 右の木 */
+.tree2 {
+  right: 11%;
+  bottom: 19%;
+}
+
+/* 「せいかい！」をポンと弾ませる */
+.correct-pop {
+  animation: correctPop 0.5s ease;
+}
+
+@keyframes correctPop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tempo-control {
+  position: absolute;
+  left: 40px;
+  bottom: 28vh;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  z-index: 10;
+}
+
+.tempo-control span {
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.tempo-button {
+  padding: 7px 12px;
+  font-size: 16px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+}
+
+.tempo-button.selected {
+  background: #ffd59e;
+  border: 2px solid #f4a259;
+}
+
+#backButton {
+  position: absolute;
+  right: 40px;
+  bottom: 35vh;
+  z-index: 10;
+
+  font-size: 18px;
+  padding: 10px 18px;
+}
+
+  </style>
+</head>
+
+
+<body>
+
+<div id="practiceScreen">
+
+  <h1>ワルツのボール</h1>
+
+  <button id="startButton">▶ スタート</button>
+  <button id="numberButton">123をかくす</button>
+  <button id="gameButton">ゲームにすすむ →</button>
+
+  <div class="game-area">
+
+  <!-- 空と雲 -->
+  <div class="sky">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+  </div>
+
+  <!-- 丘 -->
+  <div class="hill hillBack"></div>
+  <div class="hill hillFront"></div>
+
+  <!-- 木と花 -->
+<div class="scenery-track">
+
+  <div class="scenery">
+    <span>🌳</span>
+    <span>🌷</span>
+    <span>🌳</span>
+    <span>🌼</span>
+    <span>🌳</span>
+    <span>🌷</span>
+    <span>🌳</span>
+  </div>
+
+  <div class="scenery">
+    <span>🌳</span>
+    <span>🌷</span>
+    <span>🌳</span>
+    <span>🌼</span>
+    <span>🌳</span>
+    <span>🌷</span>
+    <span>🌳</span>
+  </div>
+
+</div>
+
+  <!-- ボール -->
+  <div class="ball"></div>
+
+  <!-- 1・2・3 -->
+  <div id="beatNumber"></div>
+
+  <!-- 地面 -->
+  <div class="ground"></div>
+
+</div>
+</div>
+
+<div id="gameScreen">
+
+  <h1>1拍目をつかまえよう！</h1>
+
+  <p>音をよく聞いて、「1」だと思ったところで押してね！<br>
+  5回チャレンジできるよ！</p>
+
+  <button id="gameStartButton">▶ ゲームスタート</button>
+
+  <br><br>
+
+  <button id="catchButton">ここ！</button>
+
+  <div id="result"></div>
+
+  <div id="score"></div>
+
+  <br>
+
+ <div class="game-decoration">
+  <span class="tree tree1">🌳</span>
+  <span class="flower flower1">🌷</span>
+  <span class="flower flower2">🌼</span>
+  <span class="tree tree2">🌳</span>
+</div>
+
+  <button id="backButton">← もどる</button>
+
+<div class="tempo-control">
+  <span>テンポ</span>
+  <button class="tempo-button" data-bpm="80">🐢 ゆっくり</button>
+  <button class="tempo-button selected" data-bpm="100">🎵 ふつう</button>
+  <button class="tempo-button" data-bpm="120">🐇 はやい</button>
+</div>
+
+</div>
+  <script>
+
+  const ball = document.querySelector('.ball');
+  const startButton = document.querySelector('#startButton');
+  const scenery = document.querySelector('.scenery-track');
+  const beatNumber = document.querySelector('#beatNumber');
+  const numberButton = document.querySelector('#numberButton');
+  let showNumbers = true;
+
+　const practiceScreen = document.querySelector('#practiceScreen');
+　const gameScreen = document.querySelector('#gameScreen');
+　const gameButton = document.querySelector('#gameButton');
+　const backButton = document.querySelector('#backButton');
+
+ const gameStartButton = document.querySelector('#gameStartButton');
+ const catchButton = document.querySelector('#catchButton');
+ const result = document.querySelector('#result');
+
+ let gameBeat = 1;
+ let gameTimer;
+ let gamePlaying = false;
+
+ let gameBpm = 100;
+
+ let challengeCount = 0;
+ let correctCount = 0;
+ let canCatch = true;
+ let challengeResults = [];
+
+ const score = document.querySelector('#score');
+
+  let beat = 1;
+  let audioContext;
+  let timer;
+  let isPlaying = false;
+
+  function playSound(isFirstBeat) {
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    const now = audioContext.currentTime;
+
+    oscillator.type = 'sine';
+
+    if (isFirstBeat) {
+      // 1拍目：低め・強め
+      oscillator.frequency.setValueAtTime(220, now);
+      oscillator.frequency.exponentialRampToValueAtTime(140, now + 0.18);
+
+      gain.gain.setValueAtTime(0.35, now);
+    } else {
+      // 2・3拍目：高め・弱め
+      oscillator.frequency.setValueAtTime(300, now);
+      oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.12);
+
+      gain.gain.setValueAtTime(0.15, now);
+    }
+
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+    oscillator.start(now);
+    oscillator.stop(now + 0.2);
+  }
+
+
+  function bounce() {
+
+    if (showNumbers) {
+     beatNumber.textContent = beat;
+   } else {
+     beatNumber.textContent = '';
+   }
+    
+    if (beat === 1) {
+     beatNumber.style.fontSize = '100px';
+    } else {
+     beatNumber.style.fontSize = '70px';
+    }
+
+    let height;
+
+    if (beat === 3) {
+      height = 360;   // 3拍目から次の1拍目へ大きく跳ぶ
+    } else {
+      height = 180;   // 1・2拍目は小さく
+    }
+
+    playSound(beat === 1);
+
+    ball.animate(
+      [
+        {
+          transform: 'translateX(-50%) translateY(0)'
+        },
+
+        {
+          transform: `translateX(-47%) translateY(-${height}px)`
+        },
+
+        {
+          transform: 'translateX(-50%) translateY(0)'
+        }
+      ],
+      {
+        duration: 780,
+        easing: 'ease-in-out'
+      }
+    );
+
+    beat++;
+
+    if (beat > 3) {
+      beat = 1;
+    }
+  }
+
+
+  startButton.addEventListener('click', async () => {
+
+    if (isPlaying) {
+      clearInterval(timer);
+      isPlaying = false;
+
+      scenery.style.animationPlayState = 'paused';
+
+      beatNumber.textContent = '';
+
+      startButton.textContent = '▶ スタート';
+      return;
+
+    }
+
+    if (!audioContext) {
+      audioContext = new AudioContext();
+    }
+
+    await audioContext.resume();
+
+    beat = 1;
+    isPlaying = true;
+
+    scenery.style.animationPlayState = 'running';
+
+    bounce();
+
+    timer = setInterval(bounce, 800);
+
+    startButton.textContent = '■ ストップ';
+
+  });
+
+numberButton.addEventListener('click', () => {
+
+  showNumbers = !showNumbers;
+
+  if (showNumbers) {
+    numberButton.textContent = '123をかくす';
+  } else {
+    beatNumber.textContent = '';
+    numberButton.textContent = '123を表示';
+  }
+
+});
+
+gameButton.addEventListener('click', () => {
+
+  // 練習を停止
+  if (isPlaying) {
+    clearInterval(timer);
+    isPlaying = false;
+    scenery.style.animationPlayState = 'paused';
+    startButton.textContent = '▶ スタート';
+  }
+
+  practiceScreen.style.display = 'none';
+  gameScreen.style.display = 'block';
+
+});
+
+
+backButton.addEventListener('click', () => {
+
+  gameScreen.style.display = 'none';
+  practiceScreen.style.display = 'block';
+
+});
+
+function gameSound(isFirstBeat) {
+
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+
+  const now = audioContext.currentTime;
+
+  oscillator.type = 'sine';
+
+  if (isFirstBeat) {
+
+    oscillator.frequency.setValueAtTime(220, now);
+    oscillator.frequency.exponentialRampToValueAtTime(140, now + 0.18);
+
+    gain.gain.setValueAtTime(0.35, now);
+
+  } else {
+
+    oscillator.frequency.setValueAtTime(300, now);
+    oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.12);
+
+    gain.gain.setValueAtTime(0.15, now);
+  }
+
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+  oscillator.start(now);
+  oscillator.stop(now + 0.2);
+}
+
+
+function gameBeatPlay() {
+
+  // 新しい拍になったので、また1回押せる
+  canCatch = true;
+
+  gameSound(gameBeat === 1);
+
+  gameBeat++;
+
+  if (gameBeat > 3) {
+    gameBeat = 1;
+  }
+}
+
+
+gameStartButton.addEventListener('click', async () => {
+
+  if (gamePlaying) {
+
+    clearInterval(gameTimer);
+
+    gamePlaying = false;
+
+    gameStartButton.textContent = '▶ ゲームスタート';
+
+    return;
+  }
+
+  if (!audioContext) {
+    audioContext = new AudioContext();
+  }
+
+  await audioContext.resume();
+
+  gameBeat = 1;
+  gamePlaying = true;
+
+  challengeCount = 0;
+  correctCount = 0;
+  challengeResults = [];
+
+  result.textContent = '';
+
+  score.textContent = 'チャレンジ　○ ○ ○ ○ ○　　せいかい 0回';
+
+  gameBeatPlay();
+
+  const interval = 60000 / gameBpm;
+  gameTimer = setInterval(gameBeatPlay, interval);
+
+  gameStartButton.textContent = '■ ストップ';
+
+});
+
+
+catchButton.addEventListener('click', () => {
+
+  if (!gamePlaying || !canCatch) {
+    return;
+  }
+
+  // 連打防止
+  canCatch = false;
+
+  challengeCount++;
+
+  if (gameBeat === 2) {
+  correctCount++;
+  challengeResults.push(true);
+  result.textContent = "✨ せいかい！ ✨";
+
+result.classList.remove("correct-pop");
+void result.offsetWidth;
+result.classList.add("correct-pop");
+
+} else {
+  challengeResults.push(false);
+  result.textContent = 'おしい！';
+}
+
+  let circles = '';
+
+challengeResults.forEach(isCorrect => {
+  if (isCorrect) {
+    circles += '<span class="correctCircle">●</span> ';
+  } else {
+    circles += '<span class="wrongCircle">●</span> ';
+  }
+});
+
+for (let i = challengeCount; i < 5; i++) {
+  circles += '<span class="emptyCircle">○</span> ';
+}
+
+score.innerHTML =
+  'チャレンジ　' + circles + '　せいかい ' + correctCount + '回';
+
+  if (challengeCount >= 5) {
+
+    clearInterval(gameTimer);
+    gamePlaying = false;
+
+    if (correctCount === 5) {
+      result.textContent = '🎉 ぜんぶせいかい！';
+    } else {
+      result.textContent = 'できた！　' + correctCount + 'もんせいかい！';
+    }
+
+    gameStartButton.textContent = '▶ もういちど';
+  }
+
+});
+
+const tempoButtons = document.querySelectorAll('.tempo-button');
+
+tempoButtons.forEach(button => {
+  button.addEventListener('click', () => {
+
+    // 選んだテンポを保存
+    gameBpm = Number(button.dataset.bpm);
+
+    // ボタンの色を切り替える
+    tempoButtons.forEach(btn => {
+      btn.classList.remove('selected');
+    });
+
+    button.classList.add('selected');
+
+    // ゲーム再生中なら、すぐ新しいテンポに変更
+    if (gamePlaying) {
+      clearInterval(gameTimer);
+
+      const interval = 60000 / gameBpm;
+      gameTimer = setInterval(gameBeatPlay, interval);
+    }
+  });
+});
+
+</script>
+</body>
+
+</html>
