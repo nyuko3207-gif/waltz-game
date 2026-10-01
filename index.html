@@ -631,6 +631,19 @@
 
 }
 
+#catchButton {
+  position: relative;
+  z-index: 100;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#gameScreen::before,
+#gameScreen::after,
+.game-decoration {
+  pointer-events: none;
+}
+
   </style>
 </head>
 
