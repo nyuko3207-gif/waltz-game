@@ -126,6 +126,9 @@
 
   background-color: #f4a261;
   cursor: pointer;
+
+  touch-action: manipulation;
+-webkit-tap-highlight-color: transparent;
 }
 
 #catchButton:focus,
@@ -829,9 +832,9 @@ async function prepareAudio() {
     let height;
 
     if (beat === 3) {
-      height = 240;   // 3拍目から次の1拍目へ大きく跳ぶ
+      height = 150;   // 3拍目から次の1拍目へ大きく跳ぶ
     } else {
-      height = 140;   // 1・2拍目は小さく
+      height = 80;   // 1・2拍目は小さく
     }
 
     playSound(beat === 1);
@@ -1026,7 +1029,8 @@ gameStartButton.addEventListener('click', async () => {
 });
 
 
-catchButton.addEventListener('click', () => {
+catchButton.addEventListener('pointerdown', (event) => {
+  event.preventDefault();
 
   if (!gamePlaying) {
   return;
