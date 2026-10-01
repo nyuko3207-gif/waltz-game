@@ -644,6 +644,77 @@
   pointer-events: none;
 }
 
+/* ===== iPhone / iPad 横向き調整 ===== */
+@media (orientation: landscape) and (max-height: 700px) {
+
+  body {
+    overflow: auto;
+  }
+
+  /* 練習画面 */
+  #practiceScreen h1 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 34px;
+  }
+
+  .game-area {
+    height: calc(100vh - 210px);
+    min-height: 300px;
+    margin-top: 10px;
+  }
+
+  /* ゲーム画面 */
+  #gameScreen {
+    box-sizing: border-box;
+    height: 100vh;
+    min-height: 0;
+    padding-top: 20px;
+  }
+
+  #gameScreen h1 {
+    margin: 0 0 10px;
+    font-size: 34px;
+  }
+
+  #gameScreen p {
+    margin: 8px 0;
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  #gameStartButton {
+    margin-top: 5px;
+  }
+
+  #catchButton {
+    width: 120px;
+    height: 120px;
+    font-size: 22px;
+  }
+
+  #result {
+    height: 45px;
+    margin-top: 10px;
+    font-size: 30px;
+  }
+
+  #score {
+    margin-top: 5px;
+    font-size: 21px;
+  }
+
+  .tempo-control {
+    left: 20px;
+    bottom: 15px;
+  }
+
+  #backButton {
+    right: 20px;
+    bottom: 15px;
+  }
+}
+
   </style>
 </head>
 
