@@ -766,6 +766,19 @@
   let timer;
   let isPlaying = false;
 
+async function prepareAudio() {
+  if (!audioContext) {
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
+    audioContext = new AudioContextClass();
+  }
+
+  if (audioContext.state === 'suspended') {
+    await audioContext.resume();
+  }
+}
+
   function playSound(isFirstBeat) {
 
     const oscillator = audioContext.createOscillator();
@@ -816,9 +829,9 @@
     let height;
 
     if (beat === 3) {
-      height = 360;   // 3拍目から次の1拍目へ大きく跳ぶ
+      height = 240;   // 3拍目から次の1拍目へ大きく跳ぶ
     } else {
-      height = 180;   // 1・2拍目は小さく
+      height = 140;   // 1・2拍目は小さく
     }
 
     playSound(beat === 1);
@@ -866,11 +879,7 @@
 
     }
 
-    if (!audioContext) {
-      audioContext = new AudioContext();
-    }
-
-    await audioContext.resume();
+    await prepareAudio();
 
     beat = 1;
     isPlaying = true;
@@ -994,11 +1003,7 @@ gameStartButton.addEventListener('click', async () => {
     return;
   }
 
-  if (!audioContext) {
-    audioContext = new AudioContext();
-  }
-
-  await audioContext.resume();
+  await prepareAudio();
 
   gameBeat = 1;
   gamePlaying = true;
