@@ -777,11 +777,17 @@ async function prepareAudio() {
     audioContext = new AudioContextClass();
   }
 
-  if (audioContext.state === 'suspended') {
+  if (audioContext.state !== 'running') {
     await audioContext.resume();
   }
-}
 
+  // iPhone / iPadで音声を確実に有効にする
+  const buffer = audioContext.createBuffer(1, 1, 22050);
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioContext.destination);
+  source.start(0);
+}
   function playSound(isFirstBeat) {
 
     const oscillator = audioContext.createOscillator();
