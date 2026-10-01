@@ -1115,18 +1115,38 @@ score.innerHTML =
 
   if (challengeCount >= 5) {
 
-    clearInterval(gameTimer);
-    gamePlaying = false;
+  // これ以上タップしても判定しない
+  gamePlaying = false;
 
-    if (correctCount === 5) {
-      result.textContent = '🎉 ぜんぶせいかい！';
-    } else {
-      result.textContent = 'できた！　' + correctCount + 'もんせいかい！';
-    }
+  if (isCorrect) {
+
+    // 正解なら、今の小節の3拍目まで鳴らしてから止める
+    const beatDuration = 60000 / gameBpm;
+
+    setTimeout(() => {
+      clearInterval(gameTimer);
+
+      if (correctCount === 5) {
+        result.textContent = '🎉 ぜんぶせいかい！';
+      } else {
+        result.textContent = 'できた！　' + correctCount + 'もんせいかい！';
+      }
+
+      gameStartButton.textContent = '▶ もういちど';
+
+    }, beatDuration * 2.2);
+
+  } else {
+
+    // 不正解なら今まで通り止める
+    clearInterval(gameTimer);
+
+    result.textContent =
+      'できた！　' + correctCount + 'もんせいかい！';
 
     gameStartButton.textContent = '▶ もういちど';
   }
-
+}
 });
 
 const tempoButtons = document.querySelectorAll('.tempo-button');
