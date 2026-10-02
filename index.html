@@ -5,148 +5,413 @@
   <meta charset="UTF-8">
   <title>ワルツのボール</title>
 
+<style>
+
+/* =========================
+   全体
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
 
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: #fffaf0;
-      font-family: sans-serif;
-      text-align: center;
-    }
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-    h1 {
-      margin-top: 40px;
-      font-size: 40px;
-    }
+body {
+  background-color: #fffaf0;
+  font-family: sans-serif;
+  text-align: center;
+}
 
-    .game-area {
-      position: relative;
-      width: 100%;
-      height: 520px;
-      margin-top: 20px;
-      overflow: hidden;
-    }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
 
-    /* ボール */
-    .ball {
-      position: absolute;
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background-color: #f4a261;
 
-      left: 50%;
-      bottom: 35px;
+/* =========================
+   練習画面
+========================= */
 
-      transform: translateX(-50%);
-      z-index: 10;
-    }
+#practiceScreen {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
 
-    /* 地面 */
-    .ground {
-      position: absolute;
-      left: 0;
-      bottom: 70px;
-      width: 100%;
-      height: 8px;
-      background-color: #555;
-      z-index: 5;
-    }
+#practiceScreen h1 {
+  margin: 18px 0 10px;
+  font-size: clamp(28px, 3vw, 40px);
+}
 
-    /* 背景全体 */
-    .scenery-track {
-      position: absolute;
-      left: 0;
-      bottom: 78px;
+#startButton,
+#numberButton,
+#gameButton {
+  font-size: clamp(14px, 1.5vw, 18px);
+  padding: 7px 12px;
+  margin: 0 2px;
+}
 
-      display: flex;
-      width: 200%;
 
-      animation: scroll 10s linear infinite;
-      animation-play-state: paused;
-    }
+/* 練習画面の風景部分 */
 
-    /* 同じ背景を2枚並べる */
-    .scenery {
-      width: 50%;
-      flex-shrink: 0;
+.game-area {
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 125px);
+  min-height: 0;
+  margin-top: 8px;
+  overflow: hidden;
+}
 
-      font-size: 55px;
-      white-space: nowrap;
 
-      display: flex;
-      justify-content: space-around;
-      align-items: flex-end;
-    }
+/* 空 */
 
-    @keyframes scroll {
-      from {
-        transform: translateX(0);
-      }
-
-      to {
-        transform: translateX(-50%);
-      }
-    }
-#beatNumber {
+.sky {
   position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    to bottom,
+    #bfe8f7 0%,
+    #e7f6fb 75%,
+    #f8f4e8 100%
+  );
+
+  overflow: hidden;
+  z-index: 0;
+}
+
+
+/* 雲 */
+
+.cloud {
+  position: absolute;
+  width: 90px;
+  height: 30px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50px;
+}
+
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+}
+
+.cloud::before {
+  width: 45px;
+  height: 45px;
+  left: 15px;
+  top: -20px;
+}
+
+.cloud::after {
+  width: 55px;
+  height: 55px;
+  right: 10px;
+  top: -27px;
+}
+
+.cloud1 {
+  top: 12%;
+  left: 8%;
+}
+
+.cloud2 {
+  top: 18%;
+  left: 48%;
+  transform: scale(0.75);
+}
+
+.cloud3 {
+  top: 10%;
+  left: 84%;
+  transform: scale(0.55);
+}
+
+
+/* 丘 */
+
+.hill {
+  position: absolute;
+  transform-origin: center bottom;
+}
+
+.hillBack {
+  width: 125%;
+  height: 36%;
+  left: -15%;
+  bottom: 38px;
+
+  background: #b9d8a5;
+  border-radius: 50% 55% 0 0 / 45% 45% 0 0;
+
+  z-index: 1;
+}
+
+.hillFront {
+  width: 135%;
+  height: 29%;
+  left: -8%;
+  bottom: 38px;
+
+  background: #8fbd7c;
+  border-radius: 55% 45% 0 0 / 55% 50% 0 0;
+
+  z-index: 2;
+}
+
+
+/* 木・花 */
+
+.scenery-track {
+  position: absolute;
+  left: 0;
+  bottom: 45px;
+
+  display: flex;
+  width: 200%;
+  height: 70px;
+
+  z-index: 3;
+
+  animation: scroll 10s linear infinite;
+  animation-play-state: paused;
+}
+
+.scenery {
+  width: 50%;
+  flex-shrink: 0;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+
+  font-size: clamp(28px, 3vw, 42px);
+  white-space: nowrap;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+
+/* 地面 */
+
+.ground {
+  position: absolute;
+  left: 0;
+  bottom: 38px;
+
+  width: 100%;
+  height: 7px;
+
+  background-color: #555;
+  z-index: 6;
+}
+
+
+/* ボール */
+
+.ball {
+  position: absolute;
+
+  width: clamp(65px, 7vw, 90px);
+  height: clamp(65px, 7vw, 90px);
+
   left: 50%;
-  bottom: 350px;
+  bottom: 42px;
+
   transform: translateX(-50%);
 
-  font-size: 100px;
+  border-radius: 50%;
+  background-color: #f4a261;
+
+  z-index: 10;
+}
+
+
+/* 拍の数字 */
+
+#beatNumber {
+  position: absolute;
+
+  left: 50%;
+  top: 18%;
+
+  transform: translateX(-50%);
+
+  font-size: clamp(65px, 8vw, 100px);
   font-weight: bold;
+
   z-index: 20;
 }
+
+
+/* =========================
+   ゲーム画面
+========================= */
+
 #gameScreen {
   display: none;
-  padding-top: 100px;
+
+  position: relative;
+
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+
+  padding: 12px 15px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      ellipse at 13% 20%,
+      rgba(255,255,255,0.9) 0 34px,
+      transparent 36px
+    ),
+
+    radial-gradient(
+      ellipse at 84% 25%,
+      rgba(255,255,255,0.8) 0 27px,
+      transparent 29px
+    ),
+
+    radial-gradient(
+      ellipse 80% 30% at 65% 108%,
+      #a9cf91 0%,
+      #a9cf91 99%,
+      transparent 100%
+    ),
+
+    radial-gradient(
+      ellipse 85% 27% at 25% 103%,
+      #c5dfae 0%,
+      #c5dfae 99%,
+      transparent 100%
+    ),
+
+    linear-gradient(
+      to bottom,
+      #cceefa 0%,
+      #e8f7fb 100%
+    );
+}
+
+
+/* ゲーム画面の文字 */
+
+#gameScreen h1 {
+  position: relative;
+  z-index: 2;
+
+  margin: 5px 0 8px;
+
+  font-size: clamp(27px, 3.2vw, 40px);
 }
 
 #gameScreen p {
-  font-size: 24px;
+  position: relative;
+  z-index: 2;
+
+  margin: 4px 0 8px;
+
+  font-size: clamp(16px, 2vw, 24px);
+  line-height: 1.35;
 }
 
-#gameScreen button {
-  font-size: 18px;
-  padding: 10px 20px;
+
+/* ゲームスタート */
+
+#gameStartButton {
+  position: relative;
+  z-index: 20;
+
+  margin-top: 3px;
+
+  padding: 8px 15px;
+
+  font-size: clamp(15px, 1.6vw, 18px);
 }
+
+
+/* 「ここ！」ボタン */
 
 #catchButton {
-  font-size: 50px;
-  font-weight: bold;
+  position: relative;
+  z-index: 100;
 
-  width: 220px;
-  height: 140px;
+  width: clamp(105px, 12vw, 150px);
+  height: clamp(105px, 12vw, 150px);
 
-  border-radius: 30px;
+  margin-top: 4px;
+
   border: none;
+  border-radius: 50%;
 
-  background-color: #f4a261;
-  cursor: pointer;
+  background: #f7a35c;
+
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: bold;
+  color: #222;
+
+  box-shadow: 0 7px 0 #d9823f;
 
   touch-action: manipulation;
--webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
-#catchButton:focus,
 #catchButton:active {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 #d9823f;
+}
+
+#catchButton:focus {
   outline: none;
 }
 
-#result {
-  height: 70px;
-  margin-top: 25px;
 
-  font-size: 40px;
+/* 結果 */
+
+#result {
+  position: relative;
+  z-index: 2;
+
+  height: clamp(38px, 6vh, 65px);
+
+  margin-top: 8px;
+
+  font-size: clamp(25px, 3vw, 40px);
   font-weight: bold;
 }
 
 #score {
-  font-size: 24px;
-  margin-top: 10px;
+  position: relative;
+  z-index: 2;
+
+  margin-top: 2px;
+
+  font-size: clamp(17px, 2vw, 24px);
 }
 
 .correctCircle {
@@ -161,272 +426,15 @@
   color: #000;
 }
 
-/* ===== 空 ===== */
 
-.sky {
-  position: absolute;
-  left: 0;
-  bottom: 76px;
-  width: 100%;
-  height: 430px;
+/* 正解アニメーション */
 
-  background: linear-gradient(
-    to bottom,
-    #bfe8f7 0%,
-    #e7f6fb 75%,
-    #f8f4e8 100%
-  );
-
-  overflow: hidden;
-  z-index: 0;
-}
-
-
-/* ===== 雲 ===== */
-
-.cloud {
-  position: absolute;
-  width: 110px;
-  height: 38px;
-
-  background: rgba(255,255,255,0.85);
-  border-radius: 50px;
-}
-
-.cloud::before,
-.cloud::after {
-  content: "";
-  position: absolute;
-  background: rgba(255,255,255,0.85);
-  border-radius: 50%;
-}
-
-.cloud::before {
-  width: 55px;
-  height: 55px;
-  left: 18px;
-  top: -25px;
-}
-
-.cloud::after {
-  width: 70px;
-  height: 70px;
-  right: 12px;
-  top: -35px;
-}
-
-.cloud1 {
-  top: 70px;
-  left: 10%;
-}
-
-.cloud2 {
-  top: 120px;
-  left: 48%;
-  transform: scale(0.75);
-}
-
-.cloud3 {
-  top: 55px;
-  left: 80%;
-  transform: scale(0.55);
-}
-
-
-/* ===== 丘 ===== */
-
-.hill {
-  position: absolute;
-  border-radius: 50% 50% 0 0;
-  transform-origin: center bottom;
-}
-
-/* 遠くの薄い丘 */
-.hillBack {
-  width: 120%;
-  height: 240px;
-
-  left: -20%;
-  bottom: 76px;
-
-  background: #b9d8a5;
-
-  border-radius: 50% 55% 0 0 / 45% 45% 0 0;
-
-  z-index: 1;
-}
-
-/* 手前の濃い丘 */
-.hillFront {
-  width: 130%;
-  height: 185px;
-
-  left: -5%;
-  bottom: 76px;
-
-  background: #8fbd7c;
-
-  border-radius: 55% 45% 0 0 / 55% 50% 0 0;
-
-  z-index: 2;
-}
-
-/* ===== 木と花 ===== */
-
-.scenery {
-  width: 100vw;
-  height: 90px;
-
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-
-  font-size: 42px;
-}
-
-.scenery-track {
-  position: absolute;
-
-  left: 0;
-  bottom: 82px;
-
-  display: flex;
-
-  width: 200vw;
-  height: 90px;
-
-  z-index: 3;
-}
-
-
-/* ボールと地面は風景より前へ */
-
-#ball {
-  z-index: 5;
-}
-
-.ground {
-  z-index: 6;
-}
-#catchButton {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-
-  background: #f7a35c;
-  border: none;
-
-  font-size: 26px;
-  font-weight: bold;
-  color: #222;
-
-  cursor: pointer;
-
-  box-shadow: 0 8px 0 #d9823f;
-}
-
-#catchButton:active {
-  transform: translateY(6px);
-  box-shadow: 0 2px 0 #d9823f;
-}
-
-/* ゲーム画面の背景 */
-/* ゲーム画面の背景 */
-#gameScreen {
-  position: relative;
-  overflow: hidden;
-  min-height: 100vh;
-
-  background:
-    /* 左の雲 */
-    radial-gradient(
-      ellipse at 15% 18%,
-      rgba(255,255,255,0.9) 0 35px,
-      transparent 37px
-    ),
-
-    /* 右の雲 */
-    radial-gradient(
-      ellipse at 82% 25%,
-      rgba(255,255,255,0.8) 0 28px,
-      transparent 30px
-    ),
-
-    /* 手前の丘 */
-    radial-gradient(
-      ellipse 75% 35% at 65% 105%,
-      #a9cf91 0%,
-      #a9cf91 99%,
-      transparent 100%
-    ),
-
-    /* 奥の丘 */
-    radial-gradient(
-      ellipse 80% 32% at 30% 100%,
-      #c5dfae 0%,
-      #c5dfae 99%,
-      transparent 100%
-    ),
-
-    /* 空 */
-    linear-gradient(
-      to bottom,
-      #cceefa 0%,
-      #e8f7fb 100%
-    );
-}
-
-#gameScreen > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* ゲーム画面の木と花 */
-.game-decoration {
-  position: absolute !important;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0 !important;
-  pointer-events: none;
-}
-
-.game-decoration span {
-  position: absolute;
-  font-size: 34px;
-}
-
-/* 左の木 */
-.tree1 {
-  left: 12%;
-  bottom: 18%;
-}
-
-/* 左の花 */
-.flower1 {
-  left: 28%;
-  bottom: 15%;
-}
-
-/* 右の花 */
-.flower2 {
-  right: 27%;
-  bottom: 16%;
-}
-
-/* 右の木 */
-.tree2 {
-  right: 11%;
-  bottom: 19%;
-}
-
-/* 「せいかい！」をポンと弾ませる */
 .correct-pop {
   animation: correctPop 0.5s ease;
 }
 
 @keyframes correctPop {
+
   0% {
     transform: scale(0.7);
     opacity: 0;
@@ -446,30 +454,39 @@
   }
 }
 
+
+/* =========================
+   テンポ
+========================= */
+
 .tempo-control {
   position: absolute;
-  left: 40px;
-  bottom: 28vh;
+
+  left: 20px;
+  bottom: 130px;
 
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 
-  z-index: 10;
+  z-index: 20;
 }
 
 .tempo-control span {
-  margin-right: 5px;
+  margin-right: 3px;
   font-weight: bold;
+  font-size: clamp(13px, 1.4vw, 16px);
 }
 
 .tempo-button {
-  padding: 7px 12px;
-  font-size: 16px;
+  padding: 6px 10px;
+
+  font-size: clamp(13px, 1.4vw, 16px);
+
   border: 1px solid #aaa;
   border-radius: 10px;
+
   background: white;
-  cursor: pointer;
 }
 
 .tempo-button.selected {
@@ -477,166 +494,243 @@
   border: 2px solid #f4a259;
 }
 
+
+/* 戻る */
+
 #backButton {
   position: absolute;
-  right: 40px;
-  bottom: 35vh;
-  z-index: 10;
 
-  font-size: 18px;
-  padding: 10px 18px;
+  right: 20px;
+  bottom: 130px;
+
+  z-index: 20;
+
+  padding: 8px 14px;
+
+  font-size: clamp(14px, 1.5vw, 18px);
 }
 
-/* ===== iPhone 縦向き ===== */
-@media (max-width: 600px) and (orientation: portrait) {
 
-  body {
-    overflow: auto;
+/* =========================
+   ゲーム画面の飾り
+========================= */
+
+.game-decoration {
+  position: absolute !important;
+
+  inset: 0;
+
+  z-index: 0 !important;
+
+  pointer-events: none;
+}
+
+.game-decoration span {
+  position: absolute;
+  font-size: clamp(25px, 3vw, 34px);
+}
+
+.tree1 {
+  left: 10%;
+  bottom: 8%;
+}
+
+.flower1 {
+  left: 27%;
+  bottom: 5%;
+}
+
+.flower2 {
+  right: 27%;
+  bottom: 6%;
+}
+
+.tree2 {
+  right: 10%;
+  bottom: 9%;
+}
+
+
+/* =========================
+   高さが低い横画面
+   Mac小窓・iPad横・iPhone横
+========================= */
+
+@media (orientation: landscape) and (max-height: 700px) {
+
+  #practiceScreen h1 {
+    margin: 7px 0 5px;
+    font-size: 28px;
   }
 
+  #startButton,
+  #numberButton,
+  #gameButton {
+    padding: 5px 9px;
+    font-size: 14px;
+  }
+
+  .game-area {
+    height: calc(100dvh - 92px);
+    margin-top: 5px;
+  }
+
+  .ball {
+    width: 70px;
+    height: 70px;
+    bottom: 38px;
+  }
+
+  #beatNumber {
+    top: 15%;
+    font-size: 70px;
+  }
+
+
+  /* ゲーム画面 */
+
   #gameScreen {
-    padding-top: 45px;
-    min-height: 100dvh;
-    box-sizing: border-box;
+    padding-top: 5px;
   }
 
   #gameScreen h1 {
-    font-size: 30px;
-    margin-top: 20px;
+    margin: 0 0 3px;
+    font-size: 27px;
   }
 
   #gameScreen p {
-    font-size: 18px;
-    padding: 0 15px;
+    margin: 2px 0 4px;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  #gameStartButton {
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+
+  #gameScreen br {
+    line-height: 0.3;
   }
 
   #catchButton {
-    width: 125px;
-    height: 125px;
-    font-size: 22px;
+    width: 95px;
+    height: 95px;
+
+    margin-top: 0;
+
+    font-size: 19px;
   }
 
   #result {
-    font-size: 28px;
-    height: 50px;
-    margin-top: 15px;
+    height: 32px;
+    margin-top: 5px;
+    font-size: 23px;
   }
 
   #score {
-    font-size: 18px;
+    margin-top: 0;
+    font-size: 16px;
+  }
+
+  .tempo-control {
+    left: 10px;
+    bottom: 8px;
+    gap: 4px;
+  }
+
+  .tempo-control span {
+    font-size: 12px;
+  }
+
+  .tempo-button {
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+
+  #backButton {
+    right: 10px;
+    bottom: 8px;
+
+    padding: 5px 9px;
+    font-size: 13px;
+  }
+
+  .game-decoration span {
+    font-size: 25px;
+  }
+}
+
+
+/* =========================
+   縦向きスマートフォン
+========================= */
+
+@media (orientation: portrait) and (max-width: 600px) {
+
+  html,
+  body {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #practiceScreen,
+  #gameScreen {
+    min-height: 100dvh;
+    height: auto;
+  }
+
+  #practiceScreen h1 {
+    font-size: 28px;
+  }
+
+  .game-area {
+    height: 520px;
+  }
+
+  #gameScreen {
+    padding-top: 25px;
+    min-height: 100dvh;
+  }
+
+  #gameScreen h1 {
+    font-size: 29px;
+  }
+
+  #gameScreen p {
+    font-size: 17px;
+  }
+
+  #catchButton {
+    width: 120px;
+    height: 120px;
   }
 
   .tempo-control {
     position: relative;
+
     left: auto;
     bottom: auto;
+
     justify-content: center;
-    margin: 15px auto;
-    gap: 5px;
-  }
 
-  .tempo-button {
-    padding: 6px 8px;
-    font-size: 14px;
+    margin: 15px auto 70px;
   }
 
   #backButton {
-    right: 15px;
-    bottom: 20px;
+    position: relative;
+
+    right: auto;
+    bottom: auto;
+
+    margin-bottom: 25px;
   }
 }
 
 
-/* ===== iPhone 横向き ===== */
-@media (max-height: 500px) and (orientation: landscape) {
-
-  body {
-    overflow: auto;
-  }
-
-  #gameScreen {
-    padding-top: 10px;
-    min-height: 100dvh;
-    box-sizing: border-box;
-  }
-
-  #gameScreen h1 {
-    font-size: 26px;
-    margin: 5px 0;
-  }
-
-  #gameScreen p {
-    font-size: 16px;
-    margin: 5px 0;
-  }
-
-  #gameScreen button {
-    padding: 6px 12px;
-  }
-
-  #catchButton {
-    width: 100px;
-    height: 100px;
-    font-size: 20px;
-  }
-
-  #result {
-    height: 35px;
-    margin-top: 8px;
-    font-size: 24px;
-  }
-
-  #score {
-    font-size: 16px;
-    margin-top: 5px;
-  }
-
-  .tempo-control {
-    position: absolute;
-    left: 15px;
-    bottom: 15px;
-    gap: 4px;
-  }
-
-  .tempo-button {
-    padding: 5px 7px;
-    font-size: 13px;
-  }
-
-  #backButton {
-    right: 15px;
-    bottom: 15px;
-    font-size: 14px;
-  }
-.game-area {
-  height: calc(100dvh - 190px);
-  min-height: 300px;
-  margin-top: 5px;
-}
-
-#beatNumber {
-  bottom: 55%;
-  font-size: 80px;
-}
-
-.ball {
-  width: 70px;
-  height: 70px;
-  bottom: 35px;
-}
-
-.sky {
-  height: 100%;
-}
-
-}
-
-#catchButton {
-  position: relative;
-  z-index: 100;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
+/* 飾りはタップを邪魔しない */
 
 #gameScreen::before,
 #gameScreen::after,
@@ -644,79 +738,28 @@
   pointer-events: none;
 }
 
-/* ===== iPhone / iPad 横向き調整 ===== */
-@media (orientation: landscape) and (max-height: 700px) {
+/* Mac・iPad横画面は必ず1画面に収める */
+@media (orientation: landscape) {
 
+  html,
   body {
-    overflow: auto;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
   }
 
-  /* 練習画面 */
-  #practiceScreen h1 {
-    margin-top: 20px;
-    margin-bottom: 15px;
-    font-size: 34px;
-  }
-
-  .game-area {
-    height: calc(100vh - 210px);
-    min-height: 300px;
-    margin-top: 10px;
-  }
-
-  /* ゲーム画面 */
+  #practiceScreen,
   #gameScreen {
-    box-sizing: border-box;
-    height: 100vh;
+    width: 100%;
+    height: 100dvh;
     min-height: 0;
-    padding-top: 20px;
-  }
-
-  #gameScreen h1 {
-    margin: 0 0 10px;
-    font-size: 34px;
-  }
-
-  #gameScreen p {
-    margin: 8px 0;
-    font-size: 20px;
-    line-height: 1.4;
-  }
-
-  #gameStartButton {
-    margin-top: 5px;
-  }
-
-  #catchButton {
-    width: 120px;
-    height: 120px;
-    font-size: 22px;
-  }
-
-  #result {
-    height: 45px;
-    margin-top: 10px;
-    font-size: 30px;
-  }
-
-  #score {
-    margin-top: 5px;
-    font-size: 21px;
-  }
-
-  .tempo-control {
-    left: 20px;
-    bottom: 15px;
-  }
-
-  #backButton {
-    right: 20px;
-    bottom: 15px;
+    overflow: hidden;
   }
 }
 
-  </style>
-</head>
+</style>
+
+  </head>
 
 
 <body>
@@ -788,7 +831,6 @@
 
   <button id="gameStartButton">▶ ゲームスタート</button>
 
-  <br><br>
 
   <button id="catchButton">ここ！</button>
 
@@ -796,7 +838,6 @@
 
   <div id="score"></div>
 
-  <br>
 
  <div class="game-decoration">
   <span class="tree tree1">🌳</span>
