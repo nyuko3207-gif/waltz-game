@@ -909,20 +909,23 @@ button {
   let isPlaying = false;
 
 async function prepareAudio() {
-  if (!audioContext) {
-    const AudioContextClass =
-      window.AudioContext || window.webkitAudioContext;
+  const AudioContextClass =
+    window.AudioContext || window.webkitAudioContext;
 
+  // 音声処理がない場合、または終了している場合は新しく作る
+  if (!audioContext || audioContext.state === 'closed') {
     audioContext = new AudioContextClass();
   }
 
+  // 中断している音声処理を再開する
   if (audioContext.state !== 'running') {
     await audioContext.resume();
   }
 
-  // iPhone / iPadで音声を確実に有効にする
+  // iPhone / iPadで音声を有効にする
   const buffer = audioContext.createBuffer(1, 1, 22050);
   const source = audioContext.createBufferSource();
+
   source.buffer = buffer;
   source.connect(audioContext.destination);
   source.start(0);
